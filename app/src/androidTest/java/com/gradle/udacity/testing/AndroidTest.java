@@ -1,7 +1,10 @@
 package com.gradle.udacity.testing;
 
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v4.util.Pair;
 import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
 
@@ -38,6 +41,7 @@ public class AndroidTest extends InstrumentationTestCase{
     public final void testSuccessfulFetch() throws Throwable {
         // create  a signal to let us know when our task is done.
         final CountDownLatch signal = new CountDownLatch(1);
+        final Context instrumentationCtx = InstrumentationRegistry.getContext();
 
         // Execute the async task on the UI thread! THIS IS KEY!
         runTestOnUiThread(new Runnable() {
@@ -59,14 +63,14 @@ public class AndroidTest extends InstrumentationTestCase{
                         value = response;
                         signal.countDown();
                     }
-                }.execute();
+                }.execute(new Pair<Context, String>(instrumentationCtx, "Gourav"));
             }
         });
 
 	    /* The testing thread will wait here until the UI thread releases it
 	     * above with the countDown() or 30 seconds passes and it times out.
 	     */
-//        signal.await(30, TimeUnit.SECONDS);
+        signal.await(30, TimeUnit.SECONDS);
         assertTrue(called);
         assertNotNull(value);
         assertEquals(value.length() > 0,true);
